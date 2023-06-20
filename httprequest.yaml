@@ -1,0 +1,336 @@
+_type: export
+__export_format: 4
+__export_date: 2023-06-20T23:41:27.078Z
+__export_source: insomnia.desktop.app:v2023.2.2
+resources:
+  - _id: req_85e1ae8164bf40ce84fa44f6c50afeea
+    parentId: fld_ac80455fbc674a94a54c3dfc6d3d4556
+    modified: 1687304295524
+    created: 1687304263934
+    url: http://localhost:8000/api/menu-items/1
+    name: View single menu item
+    description: ""
+    method: GET
+    body: {}
+    parameters: []
+    headers: []
+    authentication: {}
+    metaSortKey: -1687304263934
+    isPrivate: false
+    settingStoreCookies: true
+    settingSendCookies: true
+    settingDisableRenderRequestBody: false
+    settingEncodeUrl: true
+    settingRebuildPath: true
+    settingFollowRedirects: global
+    _type: request
+  - _id: fld_ac80455fbc674a94a54c3dfc6d3d4556
+    parentId: wrk_0f84c944539a4726ba25b58fe0a95be6
+    modified: 1687303693483
+    created: 1687303693483
+    name: Menu Item
+    description: ""
+    environment: {}
+    environmentPropertyOrder: null
+    metaSortKey: -1687303693483
+    _type: request_group
+  - _id: wrk_0f84c944539a4726ba25b58fe0a95be6
+    parentId: null
+    modified: 1687298585162
+    created: 1687298585162
+    name: New Document
+    description: ""
+    scope: design
+    _type: workspace
+  - _id: req_0a2e00e343184b498db1c0b934c24f45
+    parentId: fld_ac80455fbc674a94a54c3dfc6d3d4556
+    modified: 1687304040152
+    created: 1687303748565
+    url: http://localhost:8000/api/menu-items/
+    name: Add new menu-item
+    description: ""
+    method: POST
+    body:
+      mimeType: application/x-www-form-urlencoded
+      params:
+        - id: pair_5d92982a45e74f56a8a17d1600809d2b
+          name: title
+          value: Huevito con tortillas
+          description: ""
+        - id: pair_7ddc1b2a884b4827b9521be8f26589d8
+          name: price
+          value: "7.15"
+          description: ""
+        - id: pair_9b50233138c04665abe9cf90308a30ac
+          name: featured
+          value: "true"
+          description: ""
+        - id: pair_4924815943be4cb1a2689d93b9245281
+          name: category_id
+          value: "1"
+          description: ""
+    parameters: []
+    headers:
+      - name: Content-Type
+        value: application/x-www-form-urlencoded
+    authentication:
+      type: bearer
+      token: f137a8a13dbeeeaca4d1ca16ada5bbcd0c87bbc6
+      prefix: Token
+    metaSortKey: -1687303748565
+    isPrivate: false
+    settingStoreCookies: true
+    settingSendCookies: true
+    settingDisableRenderRequestBody: false
+    settingEncodeUrl: true
+    settingRebuildPath: true
+    settingFollowRedirects: global
+    _type: request
+  - _id: req_b45ab315c23f487f8ee35cc2f23e3596
+    parentId: fld_ac80455fbc674a94a54c3dfc6d3d4556
+    modified: 1687303721669
+    created: 1687303694996
+    url: http://localhost:8000/api/menu-items
+    name: List menu items
+    description: ""
+    method: GET
+    body: {}
+    parameters: []
+    headers: []
+    authentication: {}
+    metaSortKey: -1687303694996
+    isPrivate: false
+    settingStoreCookies: true
+    settingSendCookies: true
+    settingDisableRenderRequestBody: false
+    settingEncodeUrl: true
+    settingRebuildPath: true
+    settingFollowRedirects: global
+    _type: request
+  - _id: req_4b187aca91d64eb9bc426e72a900635b
+    parentId: fld_97ad32d1e5ad459e955e026f36731339
+    modified: 1687302967682
+    created: 1687302897126
+    url: http://localhost:8000/api/category/3
+    name: View single category
+    description: ""
+    method: GET
+    body: {}
+    parameters: []
+    headers: []
+    authentication:
+      type: bearer
+      token: f137a8a13dbeeeaca4d1ca16ada5bbcd0c87bbc6
+      prefix: Token
+    metaSortKey: -1687302897126
+    isPrivate: false
+    settingStoreCookies: true
+    settingSendCookies: true
+    settingDisableRenderRequestBody: false
+    settingEncodeUrl: true
+    settingRebuildPath: true
+    settingFollowRedirects: global
+    _type: request
+  - _id: fld_97ad32d1e5ad459e955e026f36731339
+    parentId: wrk_0f84c944539a4726ba25b58fe0a95be6
+    modified: 1687300720092
+    created: 1687299811794
+    name: Category
+    description: ""
+    environment: {}
+    environmentPropertyOrder: null
+    metaSortKey: -1687299811794
+    _type: request_group
+  - _id: req_9216c2863fcc4a90bc3860dadb437610
+    parentId: fld_97ad32d1e5ad459e955e026f36731339
+    modified: 1687302943789
+    created: 1687302302285
+    url: http://localhost:8000/api/category/
+    name: Create category
+    description: ""
+    method: POST
+    body:
+      mimeType: application/x-www-form-urlencoded
+      params:
+        - id: pair_97426cdf09e74072b2b75dcc9f10fc43
+          name: title
+          value: Postres
+          description: ""
+    parameters: []
+    headers:
+      - name: Content-Type
+        value: application/x-www-form-urlencoded
+    authentication:
+      type: bearer
+      token: f137a8a13dbeeeaca4d1ca16ada5bbcd0c87bbc6
+      prefix: Token
+    metaSortKey: -1687302302285
+    isPrivate: false
+    settingStoreCookies: true
+    settingSendCookies: true
+    settingDisableRenderRequestBody: false
+    settingEncodeUrl: true
+    settingRebuildPath: true
+    settingFollowRedirects: global
+    _type: request
+  - _id: req_62e1b932222d485db32da2e055595275
+    parentId: fld_97ad32d1e5ad459e955e026f36731339
+    modified: 1687302627401
+    created: 1687300722109
+    url: http://localhost:8000/api/category
+    name: List categories
+    description: ""
+    method: GET
+    body: {}
+    parameters: []
+    headers: []
+    authentication:
+      type: bearer
+      prefix: Token
+      token: f137a8a13dbeeeaca4d1ca16ada5bbcd0c87bbc6
+      disabled: false
+    metaSortKey: -1687300722109
+    isPrivate: false
+    settingStoreCookies: true
+    settingSendCookies: true
+    settingDisableRenderRequestBody: false
+    settingEncodeUrl: true
+    settingRebuildPath: true
+    settingFollowRedirects: global
+    _type: request
+  - _id: req_dbf3a3afc4ad4bf3aec400341a64410b
+    parentId: fld_21aa321e54824b9aae8f363a0e319aea
+    modified: 1687299765505
+    created: 1687298585165
+    url: localhost:8000/api/users/me/
+    name: View user information with auth token
+    description: ""
+    method: GET
+    body: {}
+    parameters: []
+    headers: []
+    authentication:
+      type: bearer
+      token: bbda716b0376f972cae43b7a24aa484c65c7c2e3
+      prefix: Token
+    metaSortKey: -1687299478097.5
+    isPrivate: false
+    settingStoreCookies: true
+    settingSendCookies: true
+    settingDisableRenderRequestBody: false
+    settingEncodeUrl: true
+    settingRebuildPath: true
+    settingFollowRedirects: global
+    _type: request
+  - _id: fld_21aa321e54824b9aae8f363a0e319aea
+    parentId: wrk_0f84c944539a4726ba25b58fe0a95be6
+    modified: 1687299762463
+    created: 1687299732186
+    name: Auth
+    description: ""
+    environment: {}
+    environmentPropertyOrder: null
+    metaSortKey: -1687298683163
+    _type: request_group
+  - _id: req_bfad43a07c664ff79e3053082cf42eed
+    parentId: fld_21aa321e54824b9aae8f363a0e319aea
+    modified: 1687301740236
+    created: 1687298715829
+    url: localhost:8000/token/login
+    name: Obtain token access
+    description: ""
+    method: POST
+    body:
+      mimeType: application/x-www-form-urlencoded
+      params:
+        - id: pair_ef7ed704e3ab4348a7762e803a4ce63e
+          name: username
+          value: test
+          description: ""
+        - id: pair_61c38f25f89f441087f63a7edf5e07dd
+          name: password
+          value: test@123!
+          description: ""
+    parameters: []
+    headers:
+      - name: Content-Type
+        value: application/x-www-form-urlencoded
+    authentication: {}
+    metaSortKey: -1687299478047.5
+    isPrivate: false
+    settingStoreCookies: true
+    settingSendCookies: true
+    settingDisableRenderRequestBody: false
+    settingEncodeUrl: true
+    settingRebuildPath: true
+    settingFollowRedirects: global
+    _type: request
+  - _id: req_5b4be18a0b534f20835c4272f3fb0c12
+    parentId: fld_21aa321e54824b9aae8f363a0e319aea
+    modified: 1687299773811
+    created: 1687299405765
+    url: http://localhost:8000/api/users/
+    name: Create new user
+    description: ""
+    method: POST
+    body:
+      mimeType: application/x-www-form-urlencoded
+      params:
+        - id: pair_8c914acdb7d64b60b350fa83245a9033
+          name: email
+          value: test@test.com
+          description: ""
+        - id: pair_bf5fd18ced8e455799f8b8cad9e2c6a2
+          name: username
+          value: test
+          description: ""
+        - id: pair_ba2552a3f80d43d7ad6479ae4cda53ed
+          name: password
+          value: test@123!
+          description: ""
+    parameters: []
+    headers:
+      - name: Content-Type
+        value: application/x-www-form-urlencoded
+    authentication: {}
+    metaSortKey: -1687299477997.5
+    isPrivate: false
+    settingStoreCookies: true
+    settingSendCookies: true
+    settingDisableRenderRequestBody: false
+    settingEncodeUrl: true
+    settingRebuildPath: true
+    settingFollowRedirects: global
+    _type: request
+  - _id: env_c137d5e137eb89f08c108ae4f8212de39b6ac457
+    parentId: wrk_0f84c944539a4726ba25b58fe0a95be6
+    modified: 1687304324142
+    created: 1687298585164
+    name: Base Environment
+    data: {}
+    dataPropertyOrder: {}
+    color: null
+    isPrivate: false
+    metaSortKey: 1687298585164
+    _type: environment
+  - _id: jar_c137d5e137eb89f08c108ae4f8212de39b6ac457
+    parentId: wrk_0f84c944539a4726ba25b58fe0a95be6
+    modified: 1687298585164
+    created: 1687298585164
+    name: Default Jar
+    cookies: []
+    _type: cookie_jar
+  - _id: spc_34f45d3b4d634a63b7b1493569c6c36b
+    parentId: wrk_0f84c944539a4726ba25b58fe0a95be6
+    modified: 1687304408535
+    created: 1687298585162
+    fileName: Api capstone
+    contents: ""
+    contentType: yaml
+    _type: api_spec
+  - _id: uts_ac937c25f41e44daa8f3c76efcc62f37
+    parentId: wrk_0f84c944539a4726ba25b58fe0a95be6
+    modified: 1687298585166
+    created: 1687298585166
+    name: Example Test Suite
+    _type: unit_test_suite
