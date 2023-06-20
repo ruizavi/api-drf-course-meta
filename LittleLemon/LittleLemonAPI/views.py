@@ -38,7 +38,7 @@ class MenuItemsView(generics.ListCreateAPIView):
     def get_permissions(self):
         if (self.request.method == 'GET'):
             return []
-        print('Aqui pasa post')
+
         gr = self.request.user.groups.filter(name='Manager').exists()
         if (not gr):
             raise PermissionDenied()
@@ -53,7 +53,7 @@ class SingleMenuItemView(generics.RetrieveUpdateDestroyAPIView):
     def get_permissions(self):
         if (self.request.method == 'GET'):
             return []
-        print('Aqui pasa post')
+
         gr = self.request.user.groups.filter(name='Manager').exists()
         if (not gr):
             raise PermissionDenied()
