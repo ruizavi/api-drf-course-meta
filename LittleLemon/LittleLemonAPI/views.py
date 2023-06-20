@@ -39,14 +39,15 @@ class MenuItemsView(generics.ListCreateAPIView):
     serializer_class = MenuItemSerializer
 
     def get_permissions(self):
+        isAdmin = self.request.user.is_superuser
+        gr = self.request.user.groups.filter(name='Manager').exists()
+        if (gr or isAdmin):
+            return [IsAuthenticated()]
+
         if (self.request.method == 'GET'):
             return []
 
-        gr = self.request.user.groups.filter(name='Manager').exists()
-        if (not gr):
-            raise PermissionDenied()
-
-        return [IsAuthenticated()]
+        raise PermissionDenied()
 
 
 class SingleMenuItemView(generics.RetrieveUpdateDestroyAPIView):
