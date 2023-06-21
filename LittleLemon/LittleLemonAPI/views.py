@@ -5,7 +5,7 @@ from rest_framework.exceptions import PermissionDenied, NotFound, ValidationErro
 from rest_framework import generics
 from rest_framework.response import Response
 from .models import Category, MenuItem, Cart, Order, OrderItem
-from .serializers import CategorySerializer, MenuItemSerializer, UserSerializer, CartSerializer, OrderSerializer
+from .serializers import CategorySerializer, MenuItemSerializer, UserSerializer, CartSerializer, OrderSerializer, OrderItemSerializer
 
 # Create your views here.
 
@@ -222,3 +222,12 @@ class OrderView(generics.ListCreateAPIView):
             return Order.objects.all().filter(user=self.request.user)
         return Order.objects.all()
 
+
+class OrderItemView(generics.ListCreateAPIView):
+    permission_classes = [IsAuthenticated]
+    queryset = OrderItem.objects.all()
+    serializer_class = OrderItemSerializer
+
+    def get_queryset(self):
+        print(self.kwargs['order_id'])
+        return OrderItem.objects.all().filter(order=self.kwargs['order_id'])

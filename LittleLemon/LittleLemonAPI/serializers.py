@@ -1,7 +1,7 @@
 from rest_framework import serializers
 from .models import Category, MenuItem, Cart, Order, OrderItem
 from django.contrib.auth.models import User
-from rest_framework.exceptions import NotFound, ValidationError
+from rest_framework.exceptions import NotFound, ValidationError, ErrorDetail
 
 
 class UserSerializer(serializers.ModelSerializer):
@@ -82,6 +82,9 @@ class OrderSerializer(serializers.ModelSerializer):
 
         cart_items = Cart.objects.all().filter(user=user)
 
+        if len(cart_items) == 0:
+            raise ValidationError(detail='Cart is empty')
+
         total = sum(getattr(item, 'price') for item in cart_items)
         kwargs['total'] = total
 
@@ -105,4 +108,5 @@ class OrderItemSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = OrderItem
-        fields = ['order', 'menuitem', 'quantity', 'unit_price', 'price']
+        fields = ['order', 'menuitem', 'quantity',
+                  'unit_price', 'price']
