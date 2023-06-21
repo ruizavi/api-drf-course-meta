@@ -6,6 +6,8 @@ from .views import (
     SingleMenuItemView,
     ManagersView,
     SingleManagerView,
+    DeliveryCrewView,
+    SingleDeliveryView
 )
 
 urlpatterns = [
@@ -15,4 +17,6 @@ urlpatterns = [
     path("menu-items/<int:pk>/", SingleMenuItemView.as_view()),
     path("groups/managers/users/", ManagersView.as_view()),
     path("groups/managers/users/<int:pk>/", SingleManagerView.as_view()),
+    path("groups/delivery-crew/users/", DeliveryCrewView.as_view()),
+    path("groups/delivery-crew/users/<int:pk>/", SingleDeliveryView.as_view()),
 ]

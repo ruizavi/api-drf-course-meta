@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import Category, MenuItem
+from .models import Category, MenuItem, Cart, Order, OrderItem
 from django.contrib.auth.models import User
 
 
@@ -22,4 +22,19 @@ class MenuItemSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = MenuItem
-        fields = ("id", "title", "price", "featured", "category_id", "category")
+        fields = ("id", "title", "price", "featured",
+                  "category_id", "category")
+
+
+class CartSerializer(serializers.ModelSerializer):
+    menuitem = MenuItemSerializer
+    user = UserSerializer
+    unit_price = menuitem.get_value('price')
+    price = serializers.SerializerMethodField(method_name='calc_total')
+
+    class Meta:
+        model = Cart
+        fields = ('id', 'menuitem', 'quantity', 'unit_price', 'price', 'user')
+
+    def calc_total(self, cart: Cart):
+        return self.unit_price * cart.unit_price
