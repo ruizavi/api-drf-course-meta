@@ -7,7 +7,8 @@ from .views import (
     ManagersView,
     SingleManagerView,
     DeliveryCrewView,
-    SingleDeliveryView
+    SingleDeliveryView,
+    CartView
 )
 
 urlpatterns = [
@@ -19,4 +20,5 @@ urlpatterns = [
     path("groups/managers/users/<int:pk>/", SingleManagerView.as_view()),
     path("groups/delivery-crew/users/", DeliveryCrewView.as_view()),
     path("groups/delivery-crew/users/<int:pk>/", SingleDeliveryView.as_view()),
+    path("cart/", CartView.as_view())
 ]

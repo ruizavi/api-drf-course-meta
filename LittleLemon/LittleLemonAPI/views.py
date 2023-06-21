@@ -4,8 +4,8 @@ from rest_framework.permissions import IsAuthenticated, IsAdminUser
 from rest_framework.exceptions import PermissionDenied, NotFound, ValidationError
 from rest_framework import generics
 from rest_framework.response import Response
-from .models import Category, MenuItem
-from .serializers import CategorySerializer, MenuItemSerializer, UserSerializer
+from .models import Category, MenuItem, Cart
+from .serializers import CategorySerializer, MenuItemSerializer, UserSerializer, CartSerializer
 
 # Create your views here.
 
@@ -193,3 +193,12 @@ class SingleDeliveryView(generics.RetrieveDestroyAPIView):
             return [IsAuthenticated()]
 
         raise PermissionDenied()
+
+
+class CartView(generics.ListCreateAPIView):
+    permission_classes = ([IsAuthenticated])
+    queryset = Cart.objects.all()
+    serializer_class = CartSerializer
+
+    def get_queryset(self):
+        return super().get_queryset().filter(user=self.request.user)
