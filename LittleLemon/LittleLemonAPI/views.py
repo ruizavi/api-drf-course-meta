@@ -4,8 +4,8 @@ from rest_framework.permissions import IsAuthenticated, IsAdminUser
 from rest_framework.exceptions import PermissionDenied, NotFound, ValidationError
 from rest_framework import generics
 from rest_framework.response import Response
-from .models import Category, MenuItem, Cart
-from .serializers import CategorySerializer, MenuItemSerializer, UserSerializer, CartSerializer
+from .models import Category, MenuItem, Cart, Order, OrderItem
+from .serializers import CategorySerializer, MenuItemSerializer, UserSerializer, CartSerializer, OrderSerializer
 
 # Create your views here.
 
@@ -208,3 +208,17 @@ class CartView(generics.ListCreateAPIView):
         Cart.objects.filter(user=self.request.user).delete()
 
         return Response({'detail': 'Ok'}, status=200)
+
+
+class OrderView(generics.ListCreateAPIView):
+    permission_classes = [IsAuthenticated]
+    queryset = Order.objects.all()
+    serializer_class = OrderSerializer
+
+    def get_queryset(self):
+        gr = self.request.user.groups.filter(name="Manager").exists()
+
+        if not gr:
+            return Order.objects.all().filter(user=self.request.user)
+        return Order.objects.all()
+
