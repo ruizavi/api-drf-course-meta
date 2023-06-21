@@ -26,9 +26,14 @@ class MenuItemSerializer(serializers.ModelSerializer):
         fields = ("id", "title", "price", "featured",
                   "category_id", "category")
 
+    def validate_category_id(self, value):
+        if not Category.objects.filter(id=value).exists():
+            raise NotFound(detail="Category not exists")
+        return value
+
 
 class CartSerializer(serializers.ModelSerializer):
-    menuitem = serializers.StringRelatedField()
+    menuitem = MenuItemSerializer
     user = serializers.StringRelatedField()
     menuitem_id = serializers.IntegerField(write_only=True)
 
@@ -43,9 +48,9 @@ class CartSerializer(serializers.ModelSerializer):
         menuitem_id = self.context['request'].data.get('menuitem_id')
         quantity = self.context['request'].data.get('quantity')
 
-        product = MenuItem.objects.get(id=menuitem_id)
+        product = MenuItem.objects.filter(id=menuitem_id).first()
         if not product:
-            raise NotFound()
+            raise NotFound(detail='Item not exists')
 
         unit_price = getattr(product, 'price')
 

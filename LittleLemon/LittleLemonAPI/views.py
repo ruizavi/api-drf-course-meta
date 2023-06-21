@@ -196,9 +196,15 @@ class SingleDeliveryView(generics.RetrieveDestroyAPIView):
 
 
 class CartView(generics.ListCreateAPIView):
-    permission_classes = ([IsAuthenticated])
+    permission_classes = [IsAuthenticated]
     queryset = Cart.objects.all()
     serializer_class = CartSerializer
 
     def get_queryset(self):
         return super().get_queryset().filter(user=self.request.user)
+
+    def delete(self, request):
+
+        Cart.objects.filter(user=self.request.user).delete()
+
+        return Response({'detail': 'Ok'}, status=200)

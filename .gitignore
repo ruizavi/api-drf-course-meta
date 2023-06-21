@@ -1,1 +1,6 @@
 Pipfile.lock
+
+.vscode
+
+LittleLemon/LittleLemon/__pycache__
+LittleLemon/LittleLemonAPI/__pycache__
