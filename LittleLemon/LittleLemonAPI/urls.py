@@ -10,7 +10,7 @@ from .views import (
     SingleDeliveryView,
     CartView,
     OrderView,
-    OrderItemView
+    SingleOrderView
 )
 
 urlpatterns = [
@@ -24,5 +24,5 @@ urlpatterns = [
     path("groups/delivery-crew/users/<int:pk>/", SingleDeliveryView.as_view()),
     path("cart/", CartView.as_view()),
     path("orders/", OrderView.as_view()),
-    path("orders/<int:order_id>/", OrderItemView.as_view())
+    path("orders/<int:pk>/", SingleOrderView.as_view())
 ]

@@ -5,7 +5,7 @@ from rest_framework.exceptions import PermissionDenied, NotFound, ValidationErro
 from rest_framework import generics
 from rest_framework.response import Response
 from .models import Category, MenuItem, Cart, Order, OrderItem
-from .serializers import CategorySerializer, MenuItemSerializer, UserSerializer, CartSerializer, OrderSerializer, OrderItemSerializer
+from .serializers import CategorySerializer, MenuItemSerializer, UserSerializer, CartSerializer, OrderSerializer, SimpleOrderSerializer
 
 # Create your views here.
 
@@ -15,12 +15,11 @@ class CategoriesView(generics.ListCreateAPIView):
     serializer_class = CategorySerializer
 
     def get_permissions(self):
-        isAdmin = self.request.user.is_superuser
-        gr = self.request.user.groups.filter(name="Manager").exists()
-        if gr or isAdmin:
-            return [IsAuthenticated()]
+        isManager = self.request.user.groups.filter(name="Manager").exists()
+        if isManager:
+            raise PermissionDenied()
 
-        raise PermissionDenied()
+        return [IsAuthenticated()]
 
 
 class SingleCategoryView(generics.RetrieveUpdateDestroyAPIView):
@@ -29,12 +28,11 @@ class SingleCategoryView(generics.RetrieveUpdateDestroyAPIView):
     serializer_class = CategorySerializer
 
     def get_permissions(self):
-        isAdmin = self.request.user.is_superuser
-        gr = self.request.user.groups.filter(name="Manager").exists()
-        if gr or isAdmin:
-            return [IsAuthenticated()]
+        isManager = self.request.user.groups.filter(name="Manager").exists()
+        if isManager:
+            raise PermissionDenied()
 
-        raise PermissionDenied()
+        return [IsAuthenticated()]
 
 
 class MenuItemsView(generics.ListCreateAPIView):
@@ -42,15 +40,14 @@ class MenuItemsView(generics.ListCreateAPIView):
     serializer_class = MenuItemSerializer
 
     def get_permissions(self):
-        isAdmin = self.request.user.is_superuser
-        gr = self.request.user.groups.filter(name="Manager").exists()
-        if gr or isAdmin:
-            return [IsAuthenticated()]
-
         if self.request.method == "GET":
             return []
 
-        raise PermissionDenied()
+        isManager = self.request.user.groups.filter(name="Manager").exists()
+        if not isManager:
+            raise PermissionDenied()
+
+        return [IsAuthenticated()]
 
 
 class SingleMenuItemView(generics.RetrieveUpdateDestroyAPIView):
@@ -58,15 +55,14 @@ class SingleMenuItemView(generics.RetrieveUpdateDestroyAPIView):
     serializer_class = MenuItemSerializer
 
     def get_permissions(self):
-        isAdmin = self.request.user.is_superuser
-        gr = self.request.user.groups.filter(name="Manager").exists()
-        if gr or isAdmin:
-            return [IsAuthenticated()]
-
         if self.request.method == "GET":
             return []
 
-        raise PermissionDenied()
+        isManager = self.request.user.groups.filter(name="Manager").exists()
+        if not isManager:
+            raise PermissionDenied()
+
+        return [IsAuthenticated()]
 
 
 class ManagersView(generics.ListAPIView):
@@ -90,12 +86,11 @@ class ManagersView(generics.ListAPIView):
         )
 
     def get_permissions(self):
-        gr = self.request.user.groups.filter(name="Manager").exists()
-        isAdmin = self.request.user.is_superuser
-        if gr or isAdmin:
-            return [IsAuthenticated()]
+        isManager = self.request.user.groups.filter(name="Manager").exists()
+        if isManager:
+            raise PermissionDenied()
 
-        raise PermissionDenied()
+        return [IsAuthenticated()]
 
 
 class SingleManagerView(generics.RetrieveDestroyAPIView):
@@ -124,12 +119,11 @@ class SingleManagerView(generics.RetrieveDestroyAPIView):
         return Response({"detail": f"User remove to Manager's group"}, status=200)
 
     def get_permissions(self):
-        gr = self.request.user.groups.filter(name="Manager").exists()
-        isAdmin = self.request.user.is_superuser
-        if gr or isAdmin:
-            return [IsAuthenticated()]
+        isManager = self.request.user.groups.filter(name="Manager").exists()
+        if isManager:
+            raise PermissionDenied()
 
-        raise PermissionDenied()
+        return [IsAuthenticated()]
 
 
 class DeliveryCrewView(generics.ListAPIView):
@@ -153,12 +147,11 @@ class DeliveryCrewView(generics.ListAPIView):
         )
 
     def get_permissions(self):
-        gr = self.request.user.groups.filter(name="delivery crew").exists()
-        isAdmin = self.request.user.is_superuser
-        if gr or isAdmin:
-            return [IsAuthenticated()]
+        isManager = self.request.user.groups.filter(name="Manager").exists()
+        if isManager:
+            raise PermissionDenied()
 
-        raise PermissionDenied()
+        return [IsAuthenticated()]
 
 
 class SingleDeliveryView(generics.RetrieveDestroyAPIView):
@@ -187,12 +180,11 @@ class SingleDeliveryView(generics.RetrieveDestroyAPIView):
         return Response({"detail": f"User remove to delivery crew group"}, status=200)
 
     def get_permissions(self):
-        gr = self.request.user.groups.filter(name="delivery crew").exists()
-        isAdmin = self.request.user.is_superuser
-        if gr or isAdmin:
-            return [IsAuthenticated()]
+        isManager = self.request.user.groups.filter(name="Manager").exists()
+        if isManager:
+            raise PermissionDenied()
 
-        raise PermissionDenied()
+        return [IsAuthenticated()]
 
 
 class CartView(generics.ListCreateAPIView):
@@ -212,22 +204,37 @@ class CartView(generics.ListCreateAPIView):
 
 class OrderView(generics.ListCreateAPIView):
     permission_classes = [IsAuthenticated]
-    queryset = Order.objects.all()
     serializer_class = OrderSerializer
 
     def get_queryset(self):
-        gr = self.request.user.groups.filter(name="Manager").exists()
+        isManager = self.request.user.groups.filter(name="Manager").exists()
+        isDeliveryCrew = self.request.user.groups.filter(
+            name="Manager").exists()
+        if isManager:
+            return Order.objects.all()
 
-        if not gr:
-            return Order.objects.all().filter(user=self.request.user)
-        return Order.objects.all()
+        if isDeliveryCrew:
+            return Order.objects.filter(delivery_crew=self.request.user)
+
+        return Order.objects.filter(user=self.request.user)
 
 
-class OrderItemView(generics.ListCreateAPIView):
+class SingleOrderView(generics.RetrieveUpdateDestroyAPIView):
     permission_classes = [IsAuthenticated]
-    queryset = OrderItem.objects.all()
-    serializer_class = OrderItemSerializer
+    queryset = Order.objects.all()
+    serializer_class = SimpleOrderSerializer
 
-    def get_queryset(self):
-        print(self.kwargs['order_id'])
-        return OrderItem.objects.all().filter(order=self.kwargs['order_id'])
+    def delete(self, request, pk):
+        isManager = self.request.user.groups.filter(name="Manager").exists()
+
+        if not isManager:
+            raise PermissionDenied()
+
+        order = Order.objects.filter(id=pk).first()
+
+        order.delete()
+
+        return Response({'detail': 'Order deleted successfully'}, status=200)
+
+    # def get_queryset(self):
+    #     return OrderItem.objects.filter(order=self.kwargs['pk'])

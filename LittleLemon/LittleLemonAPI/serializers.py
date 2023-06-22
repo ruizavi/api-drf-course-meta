@@ -64,19 +64,44 @@ class CartSerializer(serializers.ModelSerializer):
         kwargs['user'] = self.context['request'].user
 
         return super().save(**kwargs)
-    # def calc_total(self):
-    #     return self.unit_price * self.quantity
+
+
+class OrderItemSerializer(serializers.ModelSerializer):
+    menuitem = serializers.StringRelatedField()
+
+    class Meta:
+        model = OrderItem
+        fields = ['order', 'menuitem', 'quantity',
+                  'unit_price', 'price']
+
+
+class SimpleOrderSerializer(serializers.ModelSerializer):
+    user = serializers.StringRelatedField()
+    orders = OrderItemSerializer(read_only=True, many=True)
+    delivery = serializers.IntegerField(required=False)
+    status = serializers.BooleanField()
+    class Meta:
+        model = Order
+        read_only_fields = ('user', 'total', 'status',
+                            'delivery_crew', 'orders', 'date')
+        fields = ['id', 'user', 'delivery_crew',
+                  'status', 'total', 'date', 'orders', 'delivery']
 
 
 class OrderSerializer(serializers.ModelSerializer):
-    user = UserSerializer
+    user = serializers.StringRelatedField()
+    orders = OrderItemSerializer(read_only=True, many=True)
+    delivery = serializers.IntegerField(write_only=True, required=False)
 
     class Meta:
         model = Order
-        read_only_fields = ('user', 'total', 'status', 'delivery_crew')
-        fields = ['id', 'user', 'delivery_crew', 'status', 'total', 'date']
+        read_only_fields = ('user', 'total', 'status',
+                            'delivery_crew', 'orders')
+        fields = ['id', 'user', 'delivery_crew',
+                  'status', 'total', 'date', 'orders', 'delivery']
 
     def save(self, **kwargs):
+        kwargs['del']
         user = self.context['request'].user
         kwargs['user'] = user
 
@@ -88,25 +113,15 @@ class OrderSerializer(serializers.ModelSerializer):
         total = sum(getattr(item, 'price') for item in cart_items)
         kwargs['total'] = total
 
-        ord = super().save(**kwargs)
+        new_order = super().save(**kwargs)
 
         for i in cart_items:
-            new_order = {'order': ord.id, 'menuitem': getattr(
-                i, 'menuitem_id'), 'quantity': getattr(i, 'quantity'), 'unit_price': getattr(i, 'unit_price'), 'price': getattr(i, 'price')}
+            menu_item = MenuItem.objects.filter(id=getattr(
+                i, 'menuitem_id')).first()
 
-            order_item = OrderItemSerializer(data=new_order)
-            order_item.is_valid(raise_exception=True)
-            order_item.save()
+            OrderItem.objects.create(order=new_order, menuitem=menu_item, quantity=getattr(
+                i, 'quantity'), unit_price=getattr(i, 'unit_price'), price=getattr(i, 'price'))
 
         cart_items.delete()
 
-        return ord
-
-
-class OrderItemSerializer(serializers.ModelSerializer):
-    order = OrderSerializer
-
-    class Meta:
-        model = OrderItem
-        fields = ['order', 'menuitem', 'quantity',
-                  'unit_price', 'price']
+        return new_order
