@@ -4,3 +4,4 @@ Pipfile.lock
 
 LittleLemon/LittleLemon/__pycache__
 LittleLemon/LittleLemonAPI/__pycache__
+LittleLemon/LittleLemonAPI/migrations/__pycache__

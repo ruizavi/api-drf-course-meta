@@ -21,7 +21,7 @@ class CategorySerializer(serializers.ModelSerializer):
 
 class MenuItemSerializer(serializers.ModelSerializer):
     category_id = serializers.IntegerField(write_only=True)
-    category = CategorySerializer(read_only=True)
+    category = serializers.StringRelatedField()
 
     class Meta:
         model = MenuItem
@@ -82,7 +82,8 @@ class SimpleOrderSerializer(serializers.ModelSerializer):
     delivery_crew = serializers.StringRelatedField()
     orders = OrderItemSerializer(read_only=True, many=True)
     status = serializers.BooleanField()
-    delivery_crew_id = serializers.IntegerField(write_only=True)
+    delivery_crew_id = serializers.IntegerField(
+        write_only=True, required=False)
 
     class Meta:
         model = Order
@@ -96,7 +97,8 @@ class SimpleOrderSerializer(serializers.ModelSerializer):
 
         is_Delivery = user.groups.filter(name="delivery crew").first()
         if is_Delivery and self.context['request'].method == "PATCH":
-            validated_data.pop('delivery_crew_id')
+            if validated_data.get('delivery_crew_id'):
+                validated_data.pop('delivery_crew_id')
             return super().update(instance, validated_data)
 
         is_Manager = user.groups.filter(name="Manager").first()

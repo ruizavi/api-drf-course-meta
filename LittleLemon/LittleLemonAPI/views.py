@@ -6,8 +6,14 @@ from rest_framework import generics
 from rest_framework.response import Response
 from .models import Category, MenuItem, Cart, Order, OrderItem
 from .serializers import CategorySerializer, MenuItemSerializer, UserSerializer, CartSerializer, OrderSerializer, SimpleOrderSerializer
-
+from rest_framework.pagination import PageNumberPagination
 # Create your views here.
+
+
+class PaginationClass(PageNumberPagination):
+    page_size = 3
+    page_size_query_param = 'page_size'
+    max_page_size = 6
 
 
 class CategoriesView(generics.ListCreateAPIView):
@@ -38,6 +44,10 @@ class SingleCategoryView(generics.RetrieveUpdateDestroyAPIView):
 class MenuItemsView(generics.ListCreateAPIView):
     queryset = MenuItem.objects.all()
     serializer_class = MenuItemSerializer
+    ordering_fields = ['price', 'title']
+    search_fields = ['title', 'category__title']
+    filterset_fields = ['category']
+    pagination_class = PaginationClass
 
     def get_permissions(self):
         if self.request.method == "GET":
@@ -80,7 +90,7 @@ class ManagersView(generics.ListAPIView):
 
         if not user:
             raise ValidationError(detail="User not found")
-        
+
         group = Group.objects.get(name="Manager")
 
         user.groups.add(group)
@@ -212,6 +222,9 @@ class CartView(generics.ListCreateAPIView):
 class OrderView(generics.ListCreateAPIView):
     permission_classes = [IsAuthenticated]
     serializer_class = OrderSerializer
+    pagination_class = PaginationClass
+    ordering_fields = ['total', 'status', 'date']
+    search_fields = ['orders__menuitem__title']
 
     def get_queryset(self):
         isManager = self.request.user.groups.filter(name="Manager").exists()
@@ -242,6 +255,3 @@ class SingleOrderView(generics.RetrieveUpdateDestroyAPIView):
         order.delete()
 
         return Response({'detail': 'Order deleted successfully'}, status=200)
-
-    # def get_queryset(self):
-    #     return OrderItem.objects.filter(order=self.kwargs['pk'])
