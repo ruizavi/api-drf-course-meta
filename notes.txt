@@ -1,0 +1,18 @@
+--- Customer User
+username = customer1, customer2, customer3
+password = cust@123! for all customer1
+
+--- Delivery
+username = delivery1, delivery2, delivery3
+password = deli@123!
+
+--- Managers
+username = manager1, manager2, manager3
+password = man@123!
+
+--- Admin
+username = admin
+password = lemon@123!
+
+Notes...
+endpoint /api/users/users/me rename to /api/users/me

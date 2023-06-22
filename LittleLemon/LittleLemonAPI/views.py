@@ -22,7 +22,7 @@ class CategoriesView(generics.ListCreateAPIView):
 
     def get_permissions(self):
         isManager = self.request.user.groups.filter(name="Manager").exists()
-        if isManager:
+        if not isManager:
             raise PermissionDenied()
 
         return [IsAuthenticated()]
@@ -35,7 +35,7 @@ class SingleCategoryView(generics.RetrieveUpdateDestroyAPIView):
 
     def get_permissions(self):
         isManager = self.request.user.groups.filter(name="Manager").exists()
-        if isManager:
+        if not isManager:
             raise PermissionDenied()
 
         return [IsAuthenticated()]

@@ -54,7 +54,8 @@ class CartSerializer(serializers.ModelSerializer):
         if not product:
             raise NotFound(detail='Item not exists')
 
-        cart_product = Cart.objects.filter(menuitem=product)
+        cart_product = Cart.objects.filter(
+            menuitem=product, user=self.context['request'].user)
         if cart_product:
             raise ValidationError(
                 detail='There is already an item in the cart with that product')
@@ -125,3 +126,28 @@ class OrderSerializer(serializers.ModelSerializer):
                             'delivery_crew', 'orders')
         fields = ['id', 'user', 'delivery_crew',
                   'status', 'total', 'date', 'orders', 'delivery']
+
+    def save(self, **kwargs):
+        user = self.context['request'].user
+        kwargs['user'] = user
+
+        cart_items = Cart.objects.all().filter(user=user)
+
+        if len(cart_items) == 0:
+            raise ValidationError(detail='Cart is empty')
+
+        total = sum(getattr(item, 'price') for item in cart_items)
+        kwargs['total'] = total
+
+        new_order = super().save(**kwargs)
+
+        for i in cart_items:
+            menu_item = MenuItem.objects.filter(id=getattr(
+                i, 'menuitem_id')).first()
+
+            OrderItem.objects.create(order=new_order, menuitem=menu_item, quantity=getattr(
+                i, 'quantity'), unit_price=getattr(i, 'unit_price'), price=getattr(i, 'price'))
+
+        cart_items.delete()
+
+        return new_order
