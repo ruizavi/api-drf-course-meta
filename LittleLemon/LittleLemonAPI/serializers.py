@@ -1,14 +1,16 @@
 from rest_framework import serializers
 from .models import Category, MenuItem, Cart, Order, OrderItem
 from django.contrib.auth.models import User
-from rest_framework.exceptions import NotFound, ValidationError, ErrorDetail
+from rest_framework.exceptions import NotFound, ValidationError, PermissionDenied
 
 
 class UserSerializer(serializers.ModelSerializer):
+    user_id = serializers.IntegerField(write_only=True)
+
     class Meta:
         model = User
-        fields = ("id", "username", "email")
-        read_only_fields = ("email", "id")
+        fields = ("id", "username", "email", 'user_id')
+        read_only_fields = ("email", "id", "username")
 
 
 class CategorySerializer(serializers.ModelSerializer):
@@ -77,15 +79,37 @@ class OrderItemSerializer(serializers.ModelSerializer):
 
 class SimpleOrderSerializer(serializers.ModelSerializer):
     user = serializers.StringRelatedField()
+    delivery_crew = serializers.StringRelatedField()
     orders = OrderItemSerializer(read_only=True, many=True)
-    delivery = serializers.IntegerField(required=False)
     status = serializers.BooleanField()
+    delivery_crew_id = serializers.IntegerField(write_only=True)
+
     class Meta:
         model = Order
         read_only_fields = ('user', 'total', 'status',
                             'delivery_crew', 'orders', 'date')
         fields = ['id', 'user', 'delivery_crew',
-                  'status', 'total', 'date', 'orders', 'delivery']
+                  'status', 'total', 'date', 'orders', 'delivery_crew_id']
+
+    def update(self, instance, validated_data):
+        user = self.context["request"].user
+
+        is_Delivery = user.groups.filter(name="delivery crew").first()
+        if is_Delivery and self.context['request'].method == "PATCH":
+            validated_data.pop('delivery_crew_id')
+            return super().update(instance, validated_data)
+
+        is_Manager = user.groups.filter(name="Manager").first()
+        if not is_Manager:
+            raise PermissionDenied()
+
+        delivery_selected = User.objects.filter(
+            id=self.context['request'].data['delivery_crew_id'])
+
+        if not delivery_selected.exists():
+            raise ValidationError("This user is not delivery crew")
+
+        return super().update(instance, validated_data)
 
 
 class OrderSerializer(serializers.ModelSerializer):
@@ -99,29 +123,3 @@ class OrderSerializer(serializers.ModelSerializer):
                             'delivery_crew', 'orders')
         fields = ['id', 'user', 'delivery_crew',
                   'status', 'total', 'date', 'orders', 'delivery']
-
-    def save(self, **kwargs):
-        kwargs['del']
-        user = self.context['request'].user
-        kwargs['user'] = user
-
-        cart_items = Cart.objects.all().filter(user=user)
-
-        if len(cart_items) == 0:
-            raise ValidationError(detail='Cart is empty')
-
-        total = sum(getattr(item, 'price') for item in cart_items)
-        kwargs['total'] = total
-
-        new_order = super().save(**kwargs)
-
-        for i in cart_items:
-            menu_item = MenuItem.objects.filter(id=getattr(
-                i, 'menuitem_id')).first()
-
-            OrderItem.objects.create(order=new_order, menuitem=menu_item, quantity=getattr(
-                i, 'quantity'), unit_price=getattr(i, 'unit_price'), price=getattr(i, 'price'))
-
-        cart_items.delete()
-
-        return new_order

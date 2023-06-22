@@ -70,24 +70,28 @@ class ManagersView(generics.ListAPIView):
     serializer_class = UserSerializer
 
     def post(self, request):
-        username = self.request.POST.get("username")
+        user_id = int(self.request.POST.get("user_id"))
 
-        if not username:
+        if not user_id:
             raise ValidationError("Username field is required")
 
-        user = self.queryset.get(username=username)
+        user = User.objects.filter(id=user_id).first()
+        print(user)
 
+        if not user:
+            raise ValidationError(detail="User not found")
+        
         group = Group.objects.get(name="Manager")
 
         user.groups.add(group)
 
         return Response(
-            {"detail": f"User {username} add to Manager's group"}, status=200
+            {"detail": f"User {user_id} add to Manager's group"}, status=200
         )
 
     def get_permissions(self):
         isManager = self.request.user.groups.filter(name="Manager").exists()
-        if isManager:
+        if not isManager:
             raise PermissionDenied()
 
         return [IsAuthenticated()]
@@ -120,7 +124,7 @@ class SingleManagerView(generics.RetrieveDestroyAPIView):
 
     def get_permissions(self):
         isManager = self.request.user.groups.filter(name="Manager").exists()
-        if isManager:
+        if not isManager:
             raise PermissionDenied()
 
         return [IsAuthenticated()]
@@ -131,24 +135,27 @@ class DeliveryCrewView(generics.ListAPIView):
     serializer_class = UserSerializer
 
     def post(self, request):
-        username = self.request.POST.get("username")
+        user_id = int(self.request.POST.get("user_id"))
 
-        if not username:
+        if not user_id:
             raise ValidationError("Username field is required")
 
-        user = self.queryset.get(username=username)
+        user = User.objects.filter(id=user_id).first()
+        print(user)
 
+        if not user:
+            raise ValidationError(detail="User not found")
         group = Group.objects.get(name="delivery crew")
 
         user.groups.add(group)
 
         return Response(
-            {"detail": f"User {username} add to delivery crew group"}, status=200
+            {"detail": f"User {user_id} add to delivery crew group"}, status=200
         )
 
     def get_permissions(self):
         isManager = self.request.user.groups.filter(name="Manager").exists()
-        if isManager:
+        if not isManager:
             raise PermissionDenied()
 
         return [IsAuthenticated()]
